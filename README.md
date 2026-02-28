@@ -1,43 +1,136 @@
-# Roomzi - Sprint 1
+# Roomzi - Two-sided Rental Marketplace
 
+## Problem
 
-## About Roomzi
+Small landlords in Ontario face significant financial risk when renting spare rooms. Eviction delays and unreliable tenants create income instability, while existing platforms (e.g., Facebook, Kijiji) optimize for listing visibility rather than trust, verification, or payment transparency.
 
-Roomzi is a modern, full-stack web application designed to revolutionize the rental market in Toronto. The platform bridges the gap between landlords and tenants by providing an intuitive, feature-rich environment for property management and discovery.
+Tenants face parallel issues: scam listings, inactive posts, and unclear lease terms.
 
-### Purpose
+We identified two core friction points:
+- Lack of structured tenant vetting
+- Lack of financial workflow visibility post-match
 
-- **For Tenants**: Easily discover and search for rental properties with advanced filtering, interactive map views, and direct communication with landlords
-- **For Landlords**: Efficiently manage property listings, track rental income, and communicate with potential tenants through a comprehensive dashboard
-- **For Everyone**: Streamline the rental process with secure authentication, real-time messaging, and a responsive, user-friendly interface
+## Product Vision
 
-## Quick Start
+Roomzi was designed as a two-sided marketplace focused not only on discovery but on risk reduction and operational management for landlords.
 
-### Prerequisites
+Rather than just facilitating matches, we built tools to:
+- Verify tenant credibility
+- Structure payment approval workflows
+- Manage lease lifecycle
+- Track rental income
 
-- Node.js (v18 or higher)
-- npm or yarn
-- Git
+## Key Product Decisions & Tradeoffs
+### Pivot from “Matching App” → “Operational Tool”
 
-### Installation & Setup
+Initially scoped as a Tinder-style matching app, we shifted mid-sprint to prioritize:
+- Rent tracking
+- Payment approval
+- Lease lifecycle management
 
-1. **Clone the repository**
+Reason:
+User interviews and persona analysis revealed landlords were more concerned about financial risk than discovery friction.
 
-## Project Overview
+Tradeoff:
+Delayed map and advanced matching features to focus on financial trust infrastructure.
 
-Roomzi is a modern web application that connects landlords and tenants in Toronto, making it easy to find rooms, apartments, and houses for rent or list your property. This project is developed as part of CSCC01 - Introduction to Software Engineering at the University of Toronto Scarborough.
+### Scope Locking After Sprint 1
 
-### Project Goals
+After experiencing burndown spikes due to mid-sprint scope changes, we:
+- Locked sprint scope earlier
+- Accounted for non-working days
+- Prioritized bug fixes before new feature expansion
 
-- Create a user-friendly platform for property listings and searches
-- Implement an interactive map interface for property visualization
-- Develop separate interfaces for landlords and tenants
-- Enable comprehensive profile management for landlords and tenants
-- Support image uploads and profile customization
-- Ensure responsive design for all devices
-- Follow software engineering best practices and methodologies
+Impact:
+Improved delivery consistency in Sprint 4.
 
-## Getting Started
+## Metrics We Would Track
+
+Although built in an academic setting, the product was designed with measurable marketplace health in mind.
+
+Marketplace Metrics:
+- Listing to message conversion rate
+- Message to lease offer rate
+- Lease offer to lease acceptance rate
+
+Financial Metrics:
+- First payment completion rate
+- On-time payment rate
+
+Retention Metrics:
+- Landlord re-listing rate
+
+**North Star Metric: Successful Lease Conversions with On-Time First Payment**
+
+This metric ensures that the platform does not optimize solely for lease signatures, but for financially reliable outcomes. A lease without on-time payment does not reduce landlord risk, so combining conversion with payment reliability directly aligns the metric with the product’s core value proposition.
+
+## My Ownership
+
+Within a 6-person agile team, I owned the end-to-end rent payment and lease renewal workflows.
+
+This included:
+- Designing relational database schema for payments and leases
+- Implementing approval-state logic (pending → approved → rejected)
+- Ensuring idempotent updates to prevent duplicate financial records
+- Defining edge cases (duplicate requests, time formatting issues)
+- Integrating landlord and tenant dashboards for state visibility
+- Debugging authentication and cross-role data synchronization issues
+- Actively contributing to sprint planning and feature tradeoff discussions
+
+**Impact:**
+The payment workflow eliminated duplicate financial record errors and improved state consistency across landlord and tenant dashboards, strengthening financial reliability and user trust in the platform.
+
+## What I Learned
+
+- Two-sided marketplaces require trust infrastructure, not just matching
+- Scope discipline is critical to predictable velocity
+- Financial workflows require clear state transitions and idempotency logic
+- Early integration testing prevents merge-heavy sprint endings
+- Product decisions must align with primary user risk, not feature excitement
+
+## System Architecture
+
+Roomzi was built using a modular full-stack architecture designed to support multi-role workflows and financial state management.
+
+#### Frontend
+- React + TypeScript
+- Role-based routing (Landlord / Tenant dashboards)
+- Protected routes and state-driven UI updates
+
+#### Backend
+- Node.js + Express
+- RESTful API design
+- Approval-state modeling for payments (pending → approved → rejected)
+
+#### Database
+- PostgreSQL with Prisma ORM
+- Relational schema supporting:
+   - Users
+   - Listings
+   - Payments
+   - Lease lifecycle
+   - Chat relationships
+
+#### Authentication & Storage
+- Supabase authentication
+- JWT-based session handling
+- Secure image storage for profiles and listings
+
+The system was designed to maintain state consistency across financial workflows and multi-user interactions.
+
+## Execution & Iteration
+
+Roomzi was developed across multiple agile sprints within a 6-person engineering team.
+
+Key execution learnings:
+- Scope changes mid-sprint significantly impacted velocity; we introduced stricter sprint locking and clearer scope definition.
+- Financial workflows required idempotent logic to prevent duplicate state transitions.
+- Integration testing earlier in the sprint reduced last-minute merge conflicts.
+- Reliability and state integrity were prioritized over rapid feature expansion.
+
+These adjustments improved sprint predictability and delivery consistency.
+
+## Running Locally
 
 ### Prerequisites
 
@@ -48,200 +141,37 @@ Roomzi is a modern web application that connects landlords and tenants in Toront
 
 ### Installation
 
-1. Clone the repository:
-
-
    ```bash
-   git clone https://github.com/yourusername/term-group-project-driven-devs.git
-   cd term-group-project-driven-devs
+   git clone https://github.com/libzee/roomzi.git
+   cd roomzi
    ```
 
+### Backend Setup
 
-2. **Backend Setup**
-
-2. Navigate to the application directory:
+Navigate to the application directory:
 
 
    ```bash
    cd backend
    npm install
-
-   # Copy environment template
-   cp config.template.env .env
-
-   # Edit .env with your Supabase credentials:
-   # SUPABASE_URL=your_supabase_url
-   # SUPABASE_ANON_KEY=your_anon_key
-   # DATABASE_URL=your_database_url
-   # DIRECT_URL=your_database_url
-
-   # Setup database
-   npm run db:generate
-   npm run db:push
-   npm run db:seed
-   ```
-
-
-3. **Frontend Setup**
-
-3. Install dependencies:
-
-
-   ```bash
-   cd ../frontend
-   npm install
-
-
-   # Create .env file
-   touch .env
-
-   # Add to .env:
-   # VITE_SUPABASE_URL=your_supabase_url
-   # VITE_SUPABASE_ANON_KEY=your_anon_key
-   # VITE_API_BASE_URL=http://localhost:3001
-   # VITE_MAPBOX_TOKEN=your_mapbox_token (optional)
-
-4. [Opitional] Create a `.env` file in the roomzi-home-finder directory:
-
-
-   ```
-
-### Running the Application
-
-1. **Start Backend Server**
-
-   ```bash
-   cd backend
    npm run dev
    ```
 
-   Backend will run on http://localhost:3001
+### Frontend Setup
 
-2. **Start Frontend Server** (in new terminal)
+Navigate to the application directory:
+
+
    ```bash
    cd frontend
-   npm run dev
-   ```
-   Frontend will run on http://localhost:8080
-
-### Usage
-
-1. Visit http://localhost:8080
-2. Sign up or login
-3. Select role (Tenant or Landlord)
-4. Start browsing properties or create listings
-
-## Features
-
-- **Authentication**: Email/password and social login
-- **Property Management**: Create, edit, and browse listings
-- **Interactive Maps**: View properties on map
-- **Messaging**: Chat between tenants and landlords
-- **Search & Filters**: Advanced property search
-
-## Technology Stack
-
-### Frontend
-
-- **React 18.3.1**: Modern React with hooks and concurrent features
-- **TypeScript 5.5.3**: Static type checking and enhanced developer experience
-- **Vite**: Lightning-fast build tool and development server
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
-- **Radix UI**: Accessible, unstyled UI components
-- **React Router v6**: Client-side routing with protected routes
-- **React Query**: Server state management and caching
-- **React Hook Form**: Performant forms with easy validation
-- **Mapbox GL JS**: Interactive maps and geolocation services
-
-### Backend
-
-- **Node.js**: JavaScript runtime for server-side development
-- **Express.js**: Fast, unopinionated web framework
-- **Prisma 6.9.0**: Next-generation ORM with type safety
-- **PostgreSQL**: Robust relational database
-- **Supabase**: Backend-as-a-Service for auth and database hosting
-- **UUID**: Unique identifier generation
-- **CORS**: Cross-origin resource sharing configuration
-
-### Development Tools
-
-- **ESLint**: Code linting and quality enforcement
-- **Nodemon**: Development server with hot reloading
-- **Git**: Version control and collaboration
-
-## Team - Driven Devs
-
-
-- Haris Malik
-- Jack Tian
-- Ishika Vithani
-- Liaba Zeeshan
-- Amanda Zhu
-- Thushshan Rameswaran
-
-The application will be available at `http://localhost:8080`
-
-## Features
-
-### 🏠 For Landlords
-
-- **Profile Management**: Create and edit comprehensive landlord profiles
-- **Property Listings**: Create, manage, and track rental property listings
-- **Profile Pictures**: Upload and manage profile pictures with Supabase storage
-- **Contact Information**: Manage phone numbers, addresses, and contact details
-- **Role Switching**: Seamlessly switch between landlord and tenant roles
-
-### 🏡 For Tenants
-
-- **Property Search**: Browse available rental properties with advanced filtering
-- **Profile Management**: Maintain tenant profiles with personal information
-- **Property Matching**: Get matched with suitable rental properties
-- **Interactive Maps**: View properties on an interactive map interface
-- **Role Switching**: Switch to landlord role to list your own properties
-
-### 🛠️ Technical Features
-
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Real-time Updates**: Instant updates for profile changes and uploads
-- **Secure Authentication**: Supabase-powered authentication with role-based access
-- **Image Storage**: Secure image upload and storage with Supabase Storage
-- **Database Integration**: PostgreSQL database with Prisma ORM
-- **Error Handling**: Comprehensive error handling and user feedback
-
-## Backend Setup
-
-To run the full application with backend functionality:
-
-1. **Start the Backend Server:**
-
-   ```bash
-   cd backend
    npm install
    npm run dev
    ```
 
-   Backend will be available at `http://localhost:3001`
+Backend runs on: 
+http://localhost:3001
 
-2. **Configure Environment Variables:**
-   Copy `backend/config.template.env` to `backend/.env` and fill in your values:
+Frontend runs on: 
+http://localhost:8080
 
-   ```
-   NODE_ENV=development
-   PORT=3001
-   FRONTEND_URL=http://localhost:8080
-   SUPABASE_URL=your_supabase_project_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   DATABASE_URL=your_postgresql_connection_string
-   DIRECT_URL=your_postgresql_direct_connection_string
-   ```
-
-3. **Initialize Database:**
-   ```bash
-   cd backend
-   npx prisma generate
-   npx prisma db push
-   ```
-
-
-
+Environment configuration details are available in /docs/setup.md
