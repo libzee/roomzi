@@ -1,0 +1,68 @@
+name: Deploy with Secrets
+on: [push]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      
+      - name: Create backend .env from secrets
+        run: |
+          cat > backend/.env << EOF
+          # Backend Environment Variables
+          # Generated from GitHub Secrets
+          # Update these values with your actual configuration
+          
+          # Server Configuration
+          PORT=3001
+          NODE_ENV=production
+          
+          # Frontend URL (for CORS)
+          FRONTEND_URL=http://localhost:80
+          
+          # Supabase Configuration
+          SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          
+          # JWT Configuration
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN=7d
+          
+          # Session Configuration
+          SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+          
+          # Connect to Supabase via connection pooling
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          
+          # Direct connection to the database. Used for migrations
+          DIRECT_URL=${{ secrets.DIRECT_URL }}
+          EOF
+      
+      - name: Create frontend .env from secrets
+        run: |
+          cat > frontend/.env << EOF
+          # Frontend Environment Variables
+          # Generated from GitHub Secrets
+          # Update these values with your actual configuration
+          
+          VITE_SUPABASE_URL=${{ secrets.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+          
+          # Mapbox Configuration
+          VITE_MAPBOX_TOKEN=${{ secrets.MAPBOX_TOKEN }}
+          EOF
+      
+      - name: Run CD Pipeline
+        run: |
+          cd CICD
+          chmod +x *.sh
+          ./full-cd-pipeline.sh 
